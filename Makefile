@@ -10,4 +10,4 @@ lab2.exe: $(OBJECTS)
 	g++ $(CPPFLAGS) -c $< -o $@
 
 clean:
-	rm  -f  *.o *.exe
+	del  *.o *.exe
