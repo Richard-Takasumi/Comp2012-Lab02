@@ -57,41 +57,93 @@ void Event::print_info(const char* first_country_name, const char* second_countr
 
 //class Match implementation
 //Task1: Constructor
-Match::Match(const char* first_country_name = nullptr, const char* second_country_name = nullptr, const char** first_players = nullptr, int num_first_players = 0, const char** second_players = nullptr, int num_second_players = 0) : num_first_players(num_first_players), num_second_players(num_second_players) {
+Match::Match(const char* first_country_name, const char* second_country_name, const char** first_players, int num_first_players, const char** second_players, int num_second_players) : num_first_players{num_first_players}, num_second_players{num_second_players} {
+
+    for (int i = 0; i < 30; i++) {
+        events[i] = nullptr;
+    }
+
+    this->first_country_name = new char[strlen(first_country_name)+1];
+    this->second_country_name = new char[strlen(second_country_name)+1];
     strcpy(this->first_country_name, first_country_name);
     strcpy(this->second_country_name, second_country_name);
 
 
     //find length of 3d list
-    int nd_list_length = 0;
-    for (const char ** t = first_players; t!= nullptr; t++, nd_list_length++) {}
-
+    this->first_players = new char*[num_first_players];
     
-    this->first_players = new char*[nd_list_length];
-    
-
-    int i = 0;
     // this->first_players = new char*[]
-    for (const char ** s = first_players; s != nullptr; s++, i++) {
-        this->first_players[i] = new char[strlen(s[0])+1]; 
-        strcpy(this->first_players[i], s[0]);
+    for (int i = 0; i < num_first_players; i++) {
+        this->first_players[i] = new char[strlen(first_players[i])+1]; 
+        strcpy(this->first_players[i], first_players[i]);
     }
+
+    //second team
+    this->second_players = new char*[num_second_players];
+    
+    // this->first_players = new char*[]
+    for (int i = 0; i < num_second_players; i++) {
+        this->second_players[i] = new char[strlen(second_players[i])+1]; 
+        strcpy(this->second_players[i], second_players[i]);
+    }    
+
 }
 
 //Task2: Copy Constructor
-Match::Match(const Match& match){
-    this->num_first_players = match.num_first_players;
-    this->num_second_players = match.num_second_players;
-    strcpy(this->first_country_name, match.first_country_name);
-    strcpy(this->second_country_name, match.second_country_name);
+Match::Match(const Match& match): num_event{match.num_event},num_first_players{match.num_first_players},num_second_players{match.num_second_players}{
 
-    
+    for (int i = 0; i < 30; i++) {
+        events[i] = nullptr;
+    }
+    first_country_name = new char[strlen(match.first_country_name)+1];
+    second_country_name = new char[strlen(match.second_country_name)+1];
+
+    strcpy(first_country_name, match.first_country_name);
+    strcpy(second_country_name, match.second_country_name);
+
+    first_players = new char*[match.num_first_players];
+
+    for (int i = 0; i < match.num_first_players; i++) {
+        first_players[i] = new char[strlen(match.first_players[i])+1]; 
+        strcpy(first_players[i], match.first_players[i]);
+    }
+    second_players = new char*[match.num_second_players];
+
+    for (int i = 0; i < match.num_second_players; i++) {
+        second_players[i] = new char[strlen(match.second_players[i])+1]; 
+        strcpy(second_players[i], match.second_players[i]);
+    }
+
+
+    for (int i = 0; i < match.num_event; i++) {
+        Event* temp = match.events[i];
+        events[i] = new Event{*temp};
+    }
 }
 
 //Task3: Destructor
 Match::~Match(){
+    delete[] first_country_name;
+    delete[] second_country_name;
 
+    for (int i = 0; i < num_first_players; i++) {
+        delete[] first_players[i];
+    }
+    delete[] first_players;
+    for (int i = 0; i < num_second_players; i++) {
+        delete[] second_players[i];
+    }
+    delete[] second_players;
+
+    for (int i = 0; i < 30; i++) {
+        delete events[i];
+    } 
+
+
+    // Match* src_match = system.matches[i];
+    // matches[i] = new Match{*src_match};
 }
+
 
 void Match::create_event(Event_Type event_type, Team_Type team_type, const char* name, int minute){
     if(num_event < 30){
@@ -120,6 +172,7 @@ void Match::print_info() const {
 
     cout << "\n\nTHE GAME START!!" << endl;
     for(int i = 0; i < num_event; ++i){
+
         events[i]->print_info(first_country_name, second_country_name);
         cout << endl;
     }
